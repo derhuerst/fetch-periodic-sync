@@ -1,0 +1,36 @@
+{
+	"name": "fetch-periodic-sync",
+	"description": "fetch() a URL periodically, with caching & data-saving support.",
+	"version": "1.0.0",
+	"main": "index.js",
+	"files": [
+		"index.js",
+		"example.js"
+	],
+	"keywords": [
+		"fetch",
+		"http",
+		"sync",
+		"interval"
+	],
+	"author": "Jannis R <mail@jannisr.de>",
+	"homepage": "https://github.com/derhuerst/fetch-periodic-sync",
+	"repository": "derhuerst/fetch-periodic-sync",
+	"bugs": "https://github.com/derhuerst/fetch-periodic-sync/issues",
+	"license": "ISC",
+	"engines": {
+		"node": ">=12"
+	},
+	"dependencies": {
+	},
+	"devDependencies": {
+		"eslint": "^7.9.0",
+		"tap-min": "^2.0.0",
+		"tape": "^5.0.1"
+	},
+	"scripts": {
+		"test": "env NODE_ENV=dev node test.js | tap-min",
+		"lint": "eslint .",
+		"prepublishOnly": "npm test && npm run lint"
+	}
+}
