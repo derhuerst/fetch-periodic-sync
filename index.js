@@ -6,13 +6,20 @@ const {fetch: _fetch} = require('fetch-ponyfill')()
 // todo: try to use `HEAD` if server doesn't support conditional requests
 const syncViaPeriodicFetch = (url, opt = {}) => {
 	const {
-		interval,
+		interval: maxInterval,
+		respectDataSaving,
+		respectPageVisibility,
 		fetchOpts,
 	} = {
 		interval: 30 * 1000, // 30s
+		respectDataSaving: true,
+		respectPageVisibility: true,
 		fetchOpts: {},
 		...opt,
 	}
+	const minInterval = 'minInterval' in opt
+		? opt.minInterval
+		: maxInterval * 3
 
 	const out = new EventEmitter()
 
@@ -79,6 +86,16 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 		return pFetching
 	}
 
+	const doc = globalThis.document
+	const isPageHidden = () => {
+		if (!respectPageVisibility || !doc) return false
+		return typeof doc.hidden === 'boolean' ? doc.hidden : false
+	}
+	const con = globalThis.navigator && globalThis.navigator.connection
+	const shouldSaveData = () => {
+		return respectDataSaving && con ? con.saveData : false
+	}
+
 	let active = false
 	let timer = null
 	const loop = () => {
@@ -86,6 +103,13 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 		.catch(() => {})
 		.then(() => {
 			if (!active) return;
+
+			// todo: take download time of the resource into account?
+			// todo: take response latency into account?
+			// todo: adapt timeout on data saving/page visibility *change*
+			const interval = isPageHidden() || shouldSaveData()
+				? minInterval
+				: maxInterval
 			timer = setTimeout(loop, interval)
 		})
 	}
