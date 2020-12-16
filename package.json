@@ -22,6 +22,7 @@
 		"node": ">=12"
 	},
 	"dependencies": {
+		"fetch-ponyfill": "^7.0.0"
 	},
 	"devDependencies": {
 		"eslint": "^7.9.0",
