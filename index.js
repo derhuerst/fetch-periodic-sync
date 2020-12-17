@@ -73,13 +73,16 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 	const refetch = () => {
 		if (pFetching !== null) return pFetching;
 
+		out.emit('fetch')
 		pFetching = fetch()
 		.then(({changed, response: res}) => {
 			pFetching = null
+			out.emit('fetch-done')
 			if (changed) out.emit('change', res)
 			return res
 		}, (err) => {
 			pFetching = null
+			out.emit('fetch-done')
 			out.emit('error', err)
 			throw err
 		})
@@ -118,12 +121,14 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 		if (timer !== null) return;
 		active = true
 		loop()
+		out.emit('start')
 	}
 	const stop = () => {
 		if (timer === null) return;
 		clearTimeout(timer)
 		timer = null
 		active = false
+		out.emit('stop')
 	}
 
 	setImmediate(start)
