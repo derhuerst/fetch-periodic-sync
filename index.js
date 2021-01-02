@@ -131,8 +131,9 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 		out.emit('stop')
 	}
 
-	setTimeout(start, 0)
+	start()
 
+	out.url = () => url
 	out.start = start
 	out.stop = stop
 	out.isActive = () => !!active
