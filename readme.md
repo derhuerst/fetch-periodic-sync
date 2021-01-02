@@ -19,7 +19,20 @@ npm install fetch-periodic-sync
 ## Usage
 
 ```js
-// todo
+const syncViaPeriodicFetch = require('fetch-periodic-sync')
+
+const synced = syncViaPeriodicFetch('https://wikipedia.org/', {
+	interval: 5_000,
+})
+
+synced.on('error', (err) => {
+	console.error('failed to refresh Wikipedia', err)
+})
+synced.on('change', (res) => {
+	// res is a Fetch API Response
+	// https://developer.mozilla.org/en-US/docs/Web/API/Response
+	res.text().then(console.log)
+})
 ```
 
 
