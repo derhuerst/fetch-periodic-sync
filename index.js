@@ -10,11 +10,15 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 		respectDataSaving,
 		respectPageVisibility,
 		fetchOpts,
+		setTimer,
+		clearTimer,
 	} = {
 		interval: 30 * 1000, // 30s
 		respectDataSaving: true,
 		respectPageVisibility: true,
 		fetchOpts: {},
+		setTimer: setTimeout,
+		clearTimer: clearTimeout,
 		...opt,
 	}
 	const minInterval = 'minInterval' in opt
@@ -113,20 +117,22 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 			const interval = isPageHidden() || shouldSaveData()
 				? minInterval
 				: maxInterval
-			timer = setTimeout(loop, interval)
+			timer = setTimer(loop, interval)
 		})
 	}
 
 	const start = () => {
-		if (timer !== null) return;
+		if (active) return;
 		active = true
 		loop()
 		out.emit('start')
 	}
 	const stop = () => {
-		if (timer === null) return;
-		clearTimeout(timer)
-		timer = null
+		if (!active) return;
+		if (timer === null) {
+			clearTimer(timer)
+			timer = null
+		}
 		active = false
 		out.emit('stop')
 	}
