@@ -62,7 +62,7 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 		let lM = res.headers.get('last-modified') || null
 		lM = lM && +new Date(lM)
 		if (!Number.isInteger(lM)) lM = null
-		if (lM !== null) {
+		if (lM !== null && lastModified !== null) {
 			if (lM <= lastModified) changed = false
 			lastModified = lM
 		}

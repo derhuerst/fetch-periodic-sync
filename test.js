@@ -58,3 +58,28 @@ test('stop()-ing right away works', async (t) => {
 	t.equal(setTimerCalls, 0, 'setTimer() has been called')
 	t.ok(stopEmitted, '`stop` event not emitted')
 })
+
+test('handles "Last-Modified: Thu, 01 Jan 1970 00:00:00 GMT" correctly', async (t) => {
+	const BUF = Buffer.from('abcd', 'hex')
+	const {url, stop} = await serve((_, res) => {
+		res.setHeader('Last-Modified', 'Thu, 01 Jan 1970 00:00:00 GMT')
+		res.end(BUF)
+	})
+	const sync = syncViaPeriodicFetch(url)
+
+	let changeEmitted = false
+	sync.once('change', () => {
+		changeEmitted = true
+	})
+	sync.once('fetch', () => console.error('fetch'))
+	sync.once('fetch-done', () => console.error('fetch-done'))
+	await new Promise((resolve, reject) => {
+		sync.once('fetch-done', resolve)
+		sync.once('error', reject)
+	})
+
+	sync.stop()
+	await stop()
+
+	t.ok(changeEmitted, '`change` event not emitted')
+})
