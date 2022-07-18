@@ -107,6 +107,8 @@ const syncViaPeriodicFetch = (url, opt = {}) => {
 	let timer = null
 	const loop = () => {
 		refetch()
+		// Because `refetch` is a public-facing function, it rejets on fetch errors,
+		// so we must suppress these errors here.
 		.catch(() => {})
 		.then(() => {
 			if (!active) return;
